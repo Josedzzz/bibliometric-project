@@ -8,7 +8,7 @@ def generate_wordcloud(counter, output_path: Union[str, Path]):
     filtered = {k: v for k, v in counter.items() if v > 0}
 
     if not filtered:
-        print(f"⚠️ Skipping word cloud: no keywords with frequency > 0")
+        print("X Skipping word cloud: no keywords with frequency > 0")
         return
     wc = WordCloud(width=1000, height=600, background_color="white")
     wc.generate_from_frequencies(counter)
@@ -16,7 +16,7 @@ def generate_wordcloud(counter, output_path: Union[str, Path]):
 
 def draw_cooccurrence_graph(G: nx.Graph, output_path: Union[str, Path], title: str = "Keyword Co-occurrence Network"):
     if G.number_of_edges() == 0:
-        print("⚠️ Skipping co-occurrence graph: no edges found.")
+        print("X Skipping co-occurrence graph: no edges found")
         return
     plt.figure(figsize=(12, 8))
     pos = nx.spring_layout(G, k=0.5, seed=42)

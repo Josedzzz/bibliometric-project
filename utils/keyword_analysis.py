@@ -84,5 +84,5 @@ def analyze_keyword_category(
         json.dump(freq_counter, f, indent=2)
     generate_wordcloud(freq_counter, wordcloud_path)
     draw_cooccurrence_graph(graph, graph_path, title=category_name)
-    print(f"✅ {category_name} analysis saved in '{figure_output_dir}' and '{json_output_dir}'")
+    print(f"{category_name} analysis saved in '{figure_output_dir}' and '{json_output_dir}'")
 

@@ -72,7 +72,7 @@ def main():
             f"years_{product_type.lower().replace(' ', '_')}.png"
         )
 
-    print("✅ All plots generated in the 'figures/' directory.")
+    print("All plots generated in the 'figures/' directory.")
 
 if __name__ == "__main__":
     main()
