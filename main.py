@@ -3,6 +3,9 @@ from utils.keyword_analysis import (
     parse_bibtex_abstracts,
     analyze_keyword_category
 )
+from utils.merge_bibtex_entries import main as merge_bibtex_main
+from utils.analyze_bibtex import run_analysis
+from utils.graph_statistics import main as graph_statistics_main
 
 # routes
 BIB_PATH = Path("data/processed/merged.bib")
@@ -86,8 +89,11 @@ TOOL = [
     "Agent Sheets", "Mimo", "Py–Learn", "SpaceChem"
 ]
 
-def main():
+
+def run_requirement_3():
+    print("🔍 Extracting abstracts...")
     abstracts = parse_bibtex_abstracts(BIB_PATH)
+
     analyze_keyword_category(SKILLS, "Skills", abstracts, OUTPUT_DIR, FIGURES_DIR)
     analyze_keyword_category(CONCEPTS, "Computational concepts", abstracts, OUTPUT_DIR, FIGURES_DIR)
     analyze_keyword_category(ATTITUDES, "Attitudes", abstracts, OUTPUT_DIR, FIGURES_DIR)
@@ -98,6 +104,28 @@ def main():
     analyze_keyword_category(MEDIUM, "Medium", abstracts, OUTPUT_DIR, FIGURES_DIR)
     analyze_keyword_category(STRATEGY, "Strategy", abstracts, OUTPUT_DIR, FIGURES_DIR)
     analyze_keyword_category(TOOL, "Tool", abstracts, OUTPUT_DIR, FIGURES_DIR)
+
+def main():
+    print("Welcome to the Bibliometric Analysis Tool")
+    while True:
+        print("\nPlease choose an option:")
+        print("1. Merge BibTeX files and detect duplicates")
+        print("2. Generate general statistics (authors, types, years, etc.)")
+        print("3. Analyze keywords: word clouds and co-occurrence graphs")
+        print("Type 'exit' to quit.")
+        choice = input("➤ Enter your choice: ").strip().lower()
+        if choice == "1":
+            merge_bibtex_main()
+        elif choice == "2":
+            run_analysis()
+            graph_statistics_main()
+        elif choice == "3":
+            run_requirement_3()
+        elif choice == "exit":
+            print("Goodbye!")
+            break
+        else:
+            print("X Invalid option. Please enter 1, 2, 3 or 'exit'.")
 
 if __name__ == "__main__":
     main()
