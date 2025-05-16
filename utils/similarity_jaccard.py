@@ -68,5 +68,5 @@ def run_jaccard_similarity(
     print(f"Saving {len(result)} pairs with similarity >= {threshold}")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
-    print(f"✅ Saved to {output_path}")
+    print(f"Saved to {output_path}")
 
