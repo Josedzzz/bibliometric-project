@@ -6,6 +6,8 @@ from utils.keyword_analysis import (
 from utils.merge_bibtex_entries import main as merge_bibtex_main
 from utils.analyze_bibtex import run_analysis
 from utils.graph_statistics import main as graph_statistics_main
+from utils.similarity_jaccard import run_jaccard_similarity
+from utils.similarity_jaccard_plot import plot_similarity_graph
 
 # routes
 BIB_PATH = Path("data/processed/merged.bib")
@@ -112,6 +114,8 @@ def main():
         print("1. Merge BibTeX files and detect duplicates")
         print("2. Generate general statistics (authors, types, years, etc.)")
         print("3. Analyze keywords: word clouds and co-occurrence graphs")
+        print("4. Similarity using Jaccard (JSON + Graph)")
+
         print("Type 'exit' to quit.")
         choice = input("➤ Enter your choice: ").strip().lower()
         if choice == "1":
@@ -124,6 +128,11 @@ def main():
         elif choice == "exit":
             print("Goodbye!")
             break
+        elif choice == "4":
+            SIMILARITY_JSON = Path("data/processed/jaccard_similarity.json")
+            GRAPH_PATH = Path("figures/keywords/jaccard_graph.png")
+            run_jaccard_similarity(BIB_PATH, SIMILARITY_JSON, threshold=0.0002)
+            plot_similarity_graph(SIMILARITY_JSON, GRAPH_PATH)
         else:
             print("X Invalid option. Please enter 1, 2, 3 or 'exit'.")
 
