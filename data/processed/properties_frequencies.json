@@ -1,9 +1,9 @@
 {
-  "classical test theory": 0,
-  "confirmatory factor analysis": 2,
-  "exploratory factor analysis": 6,
-  "item response theory": 18,
-  "reliability": 5,
-  "structural equation model": 23,
-  "validity": 3
+  "classical test theory": 11,
+  "confirmatory factor analysis": 5,
+  "exploratory factor analysis": 8,
+  "item response theory": 46,
+  "reliability": 15,
+  "structural equation model": 45,
+  "validity": 14
 }
