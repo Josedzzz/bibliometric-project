@@ -44,6 +44,9 @@ def build_graph_with_synonyms(abstracts: list[str], keyword_map: dict):
     Builds co-occurrence graph using canonical keywords, considering synonyms.
     """
     G = nx.Graph()
+    canonicals = list(keyword_map.keys())
+    for keyword in canonicals:
+       G.add_node(keyword)
     for abstract in abstracts:
         present = []
         for canonical, synonyms in keyword_map.items():

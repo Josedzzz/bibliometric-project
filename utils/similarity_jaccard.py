@@ -2,25 +2,33 @@ import re
 import json
 from pathlib import Path
 from itertools import combinations
+from typing import Dict
 
-def parse_bibtex_abstracts(path: Path) -> dict:
+def parse_bibtex_abstracts(path: Path) -> Dict[str, str]:
     """
-    Returns a dict: {entry_key: abstract}
+    Parses a .bib file and returns a dict of entry_key -> abstract (only if valid).
+    This version is adapted for Jaccard similarity.
     """
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
-    entries = content.split("\n@")
+    entries = re.split(r"\n(?=@\w+\{)", content)
+    print(f"Total entries split: {len(entries)}")
     abstracts = {}
     for entry in entries:
         key_match = re.match(r"@\w+\{([^,]+),", entry)
-        abstract_match = re.search(r"abstract\s*=\s*[{\"](.+?)[}\"]\s*,?", entry, re.IGNORECASE | re.DOTALL)
+        abstract_match = re.search(
+            r"abstract\s*=\s*(\{|\")([\s\S]+?)(\}|\")\s*,?",
+            entry,
+            re.IGNORECASE
+        )
         if key_match and abstract_match:
             key = key_match.group(1).strip()
-            abstract = abstract_match.group(1).replace("\n", " ").lower()
-            abstracts[key] = abstract
-
+            abstract = abstract_match.group(2).strip().replace("\n", " ").lower()
+            if len(abstract) > 30:
+                abstracts[key] = abstract
+    print(f"\nExtracted {len(abstracts)} abstracts with content.")
+    print(f"Unique abstracts: {len(set(abstracts.values()))}")
     return abstracts
-
 
 def jaccard_similarity(a: str, b: str) -> float:
     """
