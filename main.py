@@ -9,6 +9,7 @@ from utils.graph_statistics import main as graph_statistics_main
 from utils.similarity_jaccard import run_jaccard_similarity
 from utils.similarity_plot import plot_similarity_graph
 from utils.similarity_tfidf import run_tfidf_similarity
+from scrapers.acm_scraper import scrape_acm_bibtex
 
 # routes
 BIB_PATH = Path("data/processed/merged.bib")
@@ -117,6 +118,7 @@ def main():
         print("3. Analyze keywords: word clouds and co-occurrence graphs")
         print("4. Similarity using Jaccard (JSON + Graph)")
         print("5. Similarity using TF-IDF + Cosine Similarity")
+        print("Type 'scrape' to scrape articles from ACM")
         print("Type 'exit' to quit.")
         choice = input("➤ Enter your choice: ").strip().lower()
         if choice == "1":
@@ -139,6 +141,12 @@ def main():
             TFIDF_GRAPH = Path("figures/similarity/tfidf_graph.png")
             run_tfidf_similarity(BIB_PATH, TFIDF_JSON, threshold=0.6)
             plot_similarity_graph(TFIDF_JSON, TFIDF_GRAPH)
+        elif choice == "scrape":
+            try:
+                page = int(input("Enter ACM start page (e.g. 0, 1, 2...): "))
+                scrape_acm_bibtex(page)
+            except ValueError:
+                print("Invalid input. Please enter a valid number")
         else:
             print("X Invalid option. Please enter 1, 2, 3 or 'exit'.")
 
