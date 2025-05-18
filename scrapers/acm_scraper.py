@@ -10,7 +10,12 @@ import time
 import os
 
 def scrape_acm_bibtex(start_page: int):
-    # Define download folders
+    """
+    Launches a headless Firefox browser, navigates to ACM Digital Library,
+    accepts cookies, selects all results on the page, and downloads citations in BibTeX format
+    Args:
+        start_page (int): Page number to start the search from
+    """
     download_dir = str(Path("downloads").resolve())
     output_dir = Path("data/raw")
     Path(download_dir).mkdir(parents=True, exist_ok=True)
@@ -58,7 +63,6 @@ def scrape_acm_bibtex(start_page: int):
         driver.execute_script("arguments[0].click();", download_btn)
         print("Download triggered")
 
-        # Wait for file to appear
         time.sleep(5)
         bib_files = sorted(Path(download_dir).glob("*.bib"), key=os.path.getmtime, reverse=True)
         if not bib_files:
@@ -72,10 +76,8 @@ def scrape_acm_bibtex(start_page: int):
         print(f"BibTeX file saved to: {final_path}")
 
         input("Press Enter to close the browser...")
-
     except Exception as e:
         print(f"Error during scraping: {e}")
-
     finally:
         driver.quit()
 
@@ -85,5 +87,4 @@ if __name__ == "__main__":
         page = int(input("Enter start page (e.g. 0, 1, 2...): "))
         scrape_acm_bibtex(page)
     except ValueError:
-        print("Invalid input. Please enter a number.")
-
+        print("Invalid input. Please enter a number")
