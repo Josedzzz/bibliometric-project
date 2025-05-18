@@ -1,69 +1,89 @@
-import os
-import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
+from datetime import datetime
+from pathlib import Path
+import shutil
+import time
+import os
 
-# Configure download directory
-download_dir = os.path.join(os.getcwd(), "data", "raw")
-os.makedirs(download_dir, exist_ok=True)
+def scrape_acm_bibtex(start_page: int):
+    # Define download folders
+    download_dir = str(Path("downloads").resolve())
+    output_dir = Path("data/raw")
+    Path(download_dir).mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-# Set Firefox download preferences
-firefox_options = Options()
-firefox_options.set_preference("browser.download.folderList", 2)
-firefox_options.set_preference("browser.download.dir", download_dir)
-firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/plain, application/x-bibtex")
+    # Configure Firefox download settings
+    firefox_options = Options()
+    firefox_options.set_preference("browser.download.folderList", 2)
+    firefox_options.set_preference("browser.download.dir", download_dir)
+    firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/plain, application/x-bibtex")
+    firefox_options.set_preference("pdfjs.disabled", True)
 
-driver = webdriver.Firefox(options=firefox_options)
-driver.get("https://dl.acm.org/action/doSearch?AllField=computational+thinking&startPage=0&pageSize=50")
+    # Start browser
+    driver = webdriver.Firefox(options=firefox_options)
+    wait = WebDriverWait(driver, 10)
 
-try:
-    # Wait for page to load completely
-    WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='markall']"))
-    )
+    # Go to ACM page
+    url = f"https://dl.acm.org/action/doSearch?AllField=computational+thinking&startPage={start_page}&pageSize=50"
+    driver.get(url)
 
-    # Select all papers (single click is enough)
-    checkbox = driver.find_element(By.CSS_SELECTOR, "input[name='markall']")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-    driver.execute_script("arguments[0].click();", checkbox)
-    print("✓ Selected all papers")
-    driver.execute_script("arguments[0].click();", checkbox)
-    time.sleep(3)
-    driver.execute_script("arguments[0].click();", checkbox)
+    try:
+        print("Waiting for cookie consent button...")
+        cookie_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"))
+        )
+        cookie_button.click()
+        print("Cookies accepted")
 
-    # Click Export Citations button
-    export_button = WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "a.export-citation"))
-    )
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", export_button)
-    driver.execute_script("arguments[0].click();", export_button)
-    print("✓ Export modal opened")
-    time.sleep(3)
+        print("Selecting all results...")
+        checkbox = driver.find_element(By.CSS_SELECTOR, "input[name='markall']")
+        driver.execute_script("arguments[0].click();", checkbox)
+        time.sleep(2)
 
-    # Wait for modal and click "Download citation" button
-    WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "div.export-options"))
-    )
-    
-    # Find button by title attribute containing "Download citation"
-    download_button = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[title*='Download citation'], [title*='Download citations']"))
-    )
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", download_button)
-    driver.execute_script("arguments[0].click();", download_button)
-    print(f"✓ Download started - saving to: {download_dir}")
+        print("Opening export modal...")
+        export_button = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "a.export-citation"))
+        )
+        driver.execute_script("arguments[0].click();", export_button)
+        time.sleep(2)
 
-    # Wait for download to complete
-    print("Waiting for download to finish... (25 seconds)")
-    time.sleep(25)
-    print("✅ Download complete!")
+        print("Clicking 'Download citation'...")
+        download_btn = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "a.download__btn[title='Download citation']"))
+        )
+        driver.execute_script("arguments[0].click();", download_btn)
+        print("Download triggered")
 
-except Exception as e:
-    print(f"❌ Error occurred: {str(e)}")
-finally:
-    print("🏁 Script completed")
-    input("Press Enter to close the browser...")
-    driver.quit()
+        # Wait for file to appear
+        time.sleep(5)
+        bib_files = sorted(Path(download_dir).glob("*.bib"), key=os.path.getmtime, reverse=True)
+        if not bib_files:
+            print("No .bib file found in downloads")
+
+        latest_file = bib_files[0]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        final_path = output_dir / f"acm_scraped_{timestamp}.bib"
+        shutil.move(str(latest_file), final_path)
+
+        print(f"BibTeX file saved to: {final_path}")
+
+        input("Press Enter to close the browser...")
+
+    except Exception as e:
+        print(f"Error during scraping: {e}")
+
+    finally:
+        driver.quit()
+
+
+if __name__ == "__main__":
+    try:
+        page = int(input("Enter start page (e.g. 0, 1, 2...): "))
+        scrape_acm_bibtex(page)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
