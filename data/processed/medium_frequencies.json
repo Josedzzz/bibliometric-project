@@ -1,11 +1,11 @@
 {
-  "block programming": 0,
+  "block programming": 1,
   "mobile application": 4,
-  "pair programming": 2,
-  "plugged activities": 11,
-  "programming": 234,
-  "robotics": 47,
-  "spreadsheet": 0,
-  "stem": 260,
-  "unplugged activities": 10
+  "pair programming": 3,
+  "plugged activities": 13,
+  "programming": 398,
+  "robotics": 68,
+  "spreadsheet": 3,
+  "stem": 309,
+  "unplugged activities": 12
 }

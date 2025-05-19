@@ -1,13 +1,13 @@
 {
-  "conditionals": 9,
+  "conditionals": 11,
   "control structures": 1,
-  "directions": 8,
-  "events": 21,
+  "directions": 9,
+  "events": 24,
   "functions-funtions": 0,
-  "loops": 6,
+  "loops": 9,
   "modular structure": 0,
   "parallelism": 2,
-  "sequences": 12,
+  "sequences": 13,
   "software/hardware": 1,
-  "variables": 24
+  "variables": 29
 }
