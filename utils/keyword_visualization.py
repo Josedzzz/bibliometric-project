@@ -5,8 +5,10 @@ from typing import Union
 from pathlib import Path
 
 def generate_wordcloud(counter, output_path: Union[str, Path]):
+    """
+    Generates and saves a word cloud from keyword frequency data
+    """
     filtered = {k: v for k, v in counter.items() if v > 0}
-
     if not filtered:
         print("X Skipping word cloud: no keywords with frequency > 0")
         return
@@ -15,6 +17,9 @@ def generate_wordcloud(counter, output_path: Union[str, Path]):
     wc.to_file(str(output_path))
 
 def draw_cooccurrence_graph(G: nx.Graph, output_path: Union[str, Path], title: str = "Keyword Co-occurrence Network"):
+    """
+    Draws and saves a co-occurrence network graph of keywords
+    """
     if G.number_of_edges() == 0:
         print("X Skipping co-occurrence graph: no edges found")
         return

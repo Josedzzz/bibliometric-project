@@ -5,6 +5,9 @@ import re
 import networkx as nx
 
 def parse_bibtex_abstracts(path: Path) -> list[str]:
+    """
+    Extracts all abstracts from a BibTeX file and returns them as lowercase strings
+    """
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
     entries = content.split("\n@")
@@ -18,8 +21,8 @@ def parse_bibtex_abstracts(path: Path) -> list[str]:
 
 def parse_keywords(raw_keywords: list[str]) -> dict:
     """
-    Parses a list of keywords that may include synonyms separated by a dash.
-    Returns a dict mapping canonical keyword -> list of synonyms (including itself).
+    Parses a list of keywords that may include synonyms separated by a dash
+    Returns a dict mapping canonical keyword -> list of synonyms (including itself)
     """
     keyword_map = {}
     for item in raw_keywords:
@@ -30,7 +33,7 @@ def parse_keywords(raw_keywords: list[str]) -> dict:
 
 def count_keywords_with_synonyms(abstracts: list[str], keyword_map: dict) -> dict:
     """
-    Counts occurrences of each canonical keyword, summing all its synonyms.
+    Counts occurrences of each canonical keyword, summing all its synonyms
     """
     counter = {k: 0 for k in keyword_map}
     for abstract in abstracts:
@@ -41,7 +44,7 @@ def count_keywords_with_synonyms(abstracts: list[str], keyword_map: dict) -> dic
 
 def build_graph_with_synonyms(abstracts: list[str], keyword_map: dict):
     """
-    Builds co-occurrence graph using canonical keywords, considering synonyms.
+    Builds co-occurrence graph using canonical keywords, considering synonyms
     """
     G = nx.Graph()
     canonicals = list(keyword_map.keys())
@@ -88,4 +91,3 @@ def analyze_keyword_category(
     generate_wordcloud(freq_counter, wordcloud_path)
     draw_cooccurrence_graph(graph, graph_path, title=category_name)
     print(f"{category_name} analysis saved in '{figure_output_dir}' and '{json_output_dir}'")
-
