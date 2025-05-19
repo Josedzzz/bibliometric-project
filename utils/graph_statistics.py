@@ -8,10 +8,23 @@ FIGURES_DIR = Path("figures")
 FIGURES_DIR.mkdir(exist_ok=True)
 
 def load_stats():
+    """
+    Loads precomputed statistics from the `stats.json` file
+    Returns a dictionary with all required metrics for plotting
+    """
     with open(STATS_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def plot_bar_chart(data, title, xlabel, ylabel, filename):
+    """
+    Creates and saves a bar chart given a dictionary of data
+    Args:
+    - data: dictionary {label: value}
+    - title: chart title
+    - xlabel: label for the x-axis
+    - ylabel: label for the y-axis
+    - filename: name of the file to save the plot
+    """
     labels = list(data.keys())
     values = list(data.values())
     plt.figure(figsize=(12, 6))
@@ -29,8 +42,15 @@ def plot_bar_chart(data, title, xlabel, ylabel, filename):
     plt.close()
 
 def main():
+    """
+    Main function to generate all statistical plots
+    Produces bar charts for:
+    - Top authors
+    - Product types
+    - Top journals and publishers
+    - Publication year distribution per product type
+    """
     stats = load_stats()
-
     plot_bar_chart(
         stats["top_authors"],
         "Top 15 Authors by Number of Products",
@@ -38,7 +58,6 @@ def main():
         "Number of Products",
         "top_authors.png"
     )
-
     plot_bar_chart(
         stats["product_type_counts"],
         "Count by Product Type",
@@ -46,7 +65,6 @@ def main():
         "Count",
         "product_types.png"
     )
-
     plot_bar_chart(
         stats["top_journals"],
         "Top 15 Journals",
@@ -54,7 +72,6 @@ def main():
         "Number of Products",
         "top_journals.png"
     )
-
     plot_bar_chart(
         stats["top_publishers"],
         "Top 15 Publishers",
@@ -62,7 +79,6 @@ def main():
         "Number of Products",
         "top_publishers.png"
     )
-
     for product_type, year_data in stats["publication_year_by_type"].items():
         plot_bar_chart(
             year_data,
@@ -71,7 +87,6 @@ def main():
             "Count",
             f"years_{product_type.lower().replace(' ', '_')}.png"
         )
-
     print("All plots generated in the 'figures/' directory.")
 
 if __name__ == "__main__":

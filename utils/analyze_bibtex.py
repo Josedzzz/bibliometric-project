@@ -9,7 +9,8 @@ STATS_OUTPUT_PATH = Path("data/processed/stats.json")
 
 def parse_bibtex_entries(path):
     """
-    Parses a .bib file and returns a list of entries (as raw strings)
+    Parses the BibTeX file and returns a list of raw entry strings
+    Each entry starts with '@' and contains bibliographic data
     """
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -19,7 +20,8 @@ def parse_bibtex_entries(path):
 
 def extract_field(entry, field_name):
     """
-    Extracts a specific field from a BibTeX entry using regex
+    Extracts the value of a specified BibTeX field using regex
+    Returns the content inside curly braces for that field
     """
     pattern = re.compile(rf"{field_name}\s*=\s*{{(.*?)}}", re.IGNORECASE | re.DOTALL)
     match = pattern.search(entry)
@@ -27,7 +29,12 @@ def extract_field(entry, field_name):
 
 def analyze_entries(entries):
     """
-    Extracts statistics from a list of BibTeX entries.
+    Analyzes all BibTeX entries to collect statistics:
+    - Top 15 first authors
+    - Year of publication grouped by entry type
+    - Count by product type (article, inproceedings, etc)
+    - Top journals and top publishers
+    Returns a dictionary with all statistics
     """
     author_counter = Counter()
     year_type_counter = defaultdict(Counter)
@@ -66,7 +73,7 @@ def analyze_entries(entries):
 
 def print_statistics(stats):
     """
-    Prints the analysis results in a readable format.
+    Prints the analysis results in a readable format
     """
     print("\nTop 15 First Authors:")
     for author, count in stats["top_authors"]:
@@ -88,9 +95,9 @@ def print_statistics(stats):
 
 def save_statistics(stats):
     """
-    Saves stats to a JSON file for further processing.
+    Saves the statistics to a JSON file (`stats.json`) for further visualization
+    Converts Counter and defaultdict objects to regular dictionaries for serialization
     """
-    # Transform Counter and defaultdict to regular dicts
     serializable_stats = {
         "top_authors": dict(stats["top_authors"]),
         "publication_year_by_type": {
@@ -105,7 +112,10 @@ def save_statistics(stats):
 
 def run_analysis():
     """
-    Entry point to parse and analyze the merged BibTeX file.
+    Main execution function:
+    - Loads BibTeX entries from the merged file
+    - Analyzes the entries for statistical information
+    - Displays and stores the results
     """
     entries = parse_bibtex_entries(MERGED_PATH)
     stats = analyze_entries(entries)
@@ -114,4 +124,3 @@ def run_analysis():
 
 if __name__ == "__main__":
     run_analysis()
-
