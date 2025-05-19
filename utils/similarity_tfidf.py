@@ -6,6 +6,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 def parse_bibtex_abstracts(path: Path) -> Dict[str, str]:
+    """
+    Parses a BibTeX file and returns a dictionary of entry keys and corresponding cleaned abstracts
+    """
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
     entries = re.split(r"\n(?=@\w+\{)", content)
@@ -28,7 +31,9 @@ def parse_bibtex_abstracts(path: Path) -> Dict[str, str]:
 
 def run_tfidf_similarity(bib_path: Path, output_path: Path, threshold: float = 0.3):
     """
-    Computes cosine similarity between abstracts using TF-IDF and saves similar pairs.
+    Applies TF-IDF vectorization to abstracts and calculates pairwise cosine similarity
+    Returns only those pairs with similarity greater than or equal to the specified threshold
+    Outputs the result to a JSON file
     """
     print("Loading abstracts...")
     abstracts = parse_bibtex_abstracts(bib_path)
@@ -53,4 +58,3 @@ def run_tfidf_similarity(bib_path: Path, output_path: Path, threshold: float = 0
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(similar_pairs, f, indent=2)
     print(f"Saved {len(similar_pairs)} similar pairs to {output_path}")
-

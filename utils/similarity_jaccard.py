@@ -6,8 +6,8 @@ from typing import Dict
 
 def parse_bibtex_abstracts(path: Path) -> Dict[str, str]:
     """
-    Parses a .bib file and returns a dict of entry_key -> abstract (only if valid).
-    This version is adapted for Jaccard similarity.
+    Parses a .bib file and returns a dict of entry_key -> abstract (only if valid)
+    This version is adapted for Jaccard similarity
     """
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -32,7 +32,8 @@ def parse_bibtex_abstracts(path: Path) -> Dict[str, str]:
 
 def jaccard_similarity(a: str, b: str) -> float:
     """
-    Computes Jaccard similarity between two strings using word sets.
+    Calculates Jaccard similarity between two abstracts using word-level sets
+    Returns a float between 0 and 1 representing the intersection over union of tokens
     """
     set_a = set(a.split())
     set_b = set(b.split())
@@ -40,10 +41,10 @@ def jaccard_similarity(a: str, b: str) -> float:
         return 0.0
     return len(set_a & set_b) / len(set_a | set_b)
 
-
 def compute_jaccard_matrix(abstracts: dict, threshold=0.2) -> list[dict]:
     """
-    Computes pairwise Jaccard similarities and returns only those >= threshold.
+    Computes pairwise Jaccard similarity between all abstracts
+    Returns a list of dictionaries containing only pairs with similarity above the given threshold
     """
     similar_pairs = []
     keys = list(abstracts.keys())
@@ -58,23 +59,23 @@ def compute_jaccard_matrix(abstracts: dict, threshold=0.2) -> list[dict]:
             })
     return similar_pairs
 
-
 def run_jaccard_similarity(
     bib_path: Path,
     output_path: Path,
     threshold: float = 0.2
 ):
     """
-    Full pipeline: load abstracts, compute Jaccard similarity, save results.
+    Main pipeline to run Jaccard similarity:
+    - Loads abstracts from a BibTeX file
+    - Computes pairwise Jaccard similarities
+    - Filters based on threshold
+    - Saves result to a JSON file
     """
     print("Loading abstracts...")
     abstracts = parse_bibtex_abstracts(bib_path)
-
     print("Computing Jaccard similarities...")
     result = compute_jaccard_matrix(abstracts, threshold=threshold)
-
     print(f"Saving {len(result)} pairs with similarity >= {threshold}")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     print(f"Saved to {output_path}")
-

@@ -5,7 +5,9 @@ from pathlib import Path
 
 def plot_similarity_graph(json_path: Path, output_path: Path):
     """
-    Plots a graph where nodes are abstracts and edges represent Jaccard similarity.
+    Loads pairwise similarity results from a JSON file and visualizes the similarity network using NetworkX
+    Nodes represent BibTeX entries; edges represent similarity links with weights
+    Saves the plot to the given output path
     """
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
